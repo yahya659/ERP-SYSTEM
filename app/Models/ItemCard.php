@@ -36,6 +36,7 @@ class ItemCard extends Model
         'Quantity',
         'Quantity_retail',
         'Quantity_all_retail',
+        'image',
     ];
        // الفئة
     public function inv_itemscard_categoriesid()

@@ -16,3 +16,21 @@
     background-color: #233490;
     color: white;
 }
+.main-sidebar .nav-treeview .nav-link {
+    font-size: 13px;
+    color: #c7c7c7 !important;
+    padding-right: 35px;
+}
+
+.main-sidebar .nav-treeview .nav-link.active {
+    color: #151212 !important;
+}
+
+.main-sidebar .nav-treeview .nav-link p {
+    font-weight: 400;
+}
+.main-sidebar .nav-treeview {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}

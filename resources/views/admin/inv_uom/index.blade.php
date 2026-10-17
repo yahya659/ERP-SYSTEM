@@ -157,7 +157,7 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $info->name }}</td>
                                                 <td>{{ $info->active == 1 ? 'مفعل' : 'غير مفعل' }}</td>
-                                                <td>{{ $info->is_master == 1 ? 'وحده جمله' : ' وحده تجزئه' }}</td>
+                                                <td>{{ $info->is_master == 1 ? 'وحده جمله -اب' : '  وحده تجزئه' }}</td>
                                                 {{-- <td></td> --}}
                                                 <td>{{ $info->created_at }} بواسطة:
                                                     {{ $info->addedBy->name ?? 'غير معروف' }}

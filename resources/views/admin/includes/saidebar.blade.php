@@ -1,17 +1,17 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
     <!-- Brand -->
-    <a href="#" class="brand-link">
+    {{-- <a href="#" class="brand-link">
         <img src="{{ asset('assets/admin/dist/img/AdminLTELogo.png') }}" class="brand-image img-circle elevation-3">
         <span class="brand-text font-weight-light">ERP System</span>
-    </a>
+    </a> --}}
 
     <div class="sidebar">
 
         <!-- User -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                <img src="{{ asset('assets/admin/dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2">
+                <i class="fas fa-user-circle fa-2x text-white"></i>
             </div>
             <div class="info">
                 <a class="d-block" style="color: #ffffff; font-weight: 600;">
@@ -53,7 +53,7 @@
 
                 {{-- ================= الحسابات ================= --}}
                 @php
-                    $accountsOpen = request()->routeIs('acaauont_types.*', 'acaauonts.*','customers.*','Suppliers_Category.*','Suppliers.*');
+                    $accountsOpen = request()->routeIs('acaauont_types.*', 'acaauonts.*', 'TreasuriesTransaction.*', 'customers.*', 'Suppliers_Category.*', 'Suppliers.*', 'Exchange.*','Delegates.*');
                 @endphp
 
                 <li class="nav-item has-treeview {{ $accountsOpen ? 'menu-open' : '' }}">
@@ -74,7 +74,7 @@
                         <li class="nav-item">
                             <a href="{{ route('acaauonts.index') }}"
                                 class="nav-link {{ request()->routeIs('acaauonts.*') ? 'active' : '' }}">
-                                <p>كل الحسابات الماليه</p>
+                                <p>الشجره المحاسبيه (الحسابات) </p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -83,10 +83,28 @@
                                 <p>حسابات العملاء</p>
                             </a>
                         </li>
-                           <li class="nav-item">
+                        <li class="nav-item">
                             <a href="{{ route('Suppliers.index') }}"
                                 class="nav-link {{ request()->routeIs('Suppliers.*') ? 'active' : '' }}">
                                 <p> حسابات الموردين</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('Delegates.index') }}"
+                                class="nav-link {{ request()->routeIs('Delegates.*') ? 'active' : '' }}">
+                                <p> حسابات  المندوبين</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('TreasuriesTransaction.index') }}"
+                                class="nav-link {{ request()->routeIs('TreasuriesTransaction.*') ? 'active' : '' }}">
+                                <p> شاشه تحصيل النقديه </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('Exchange.index') }}"
+                                class="nav-link {{ request()->routeIs('Exchange.*') ? 'active' : '' }}">
+                                <p> شاشه صرف النقديه </p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -158,19 +176,71 @@
                     </ul>
                 </li>
 
-                {{-- ================= باقي الأقسام (جاهزة للتوسعة) ================= --}}
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-shopping-cart"></i>
-                        <p>حركه مخزونيه</p>
-                    </a>
-                </li>
+                {{-- ================= حركة مخزونية ================= --}}
+                @php
+                    $movementOpen = request()->routeIs('SupplierWithOrder.*','suppliers_with_ordersGenralReturn.*','itemcardbalances.*');
+                @endphp
 
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-chart-bar"></i>
-                        <p>المبيعات</p>
+                <li class="nav-item has-treeview {{ $movementOpen ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $movementOpen ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-shopping-cart"></i>
+                        <p>
+                            حركة مخزونية
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
+
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('SupplierWithOrder.index') }}"
+                                class="nav-link {{ request()->routeIs('SupplierWithOrder.*') ? 'active' : '' }}">
+                                {{-- <i class="nav-icon fas fa-file-invoice"></i> --}}
+                                <p>فواتير المشتريات</p>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('suppliers_with_ordersGenralReturn.index') }}"
+                                class="nav-link {{ request()->routeIs('suppliers_with_ordersGenralReturn.*') ? 'active' : '' }}">
+                                {{-- <i class="nav-icon fas fa-file-invoice"></i> --}}
+                                <p>فواتير مرتجع المشتريات العام </p>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('itemcardbalances.index') }}"
+                                class="nav-link {{ request()->routeIs('itemcardbalances.*') ? 'active' : '' }}">
+                                {{-- <i class="nav-icon fas fa-file-invoice"></i> --}}
+                                <p>ارصده الاااصناف </p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+{{-- ----------------------------المبيعات --}}
+                @php
+                    $movementOpen = request()->routeIs('Sales_Invoice.*');
+                @endphp
+
+                <li class="nav-item has-treeview {{ $movementOpen ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $movementOpen ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-shopping-cart"></i>
+                        <p>
+                           المبيعات
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('Sales_Invoice.index') }}"
+                                class="nav-link {{ request()->routeIs('Sales_Invoice.*') ? 'active' : '' }}">
+                                {{-- <i class="nav-icon fas fa-file-invoice"></i> --}}
+                                <p>فواتير المبيعات</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
                 <li class="nav-item">
@@ -179,18 +249,58 @@
                         <p>خدمات داخليه وخارجيه</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-users-cog"></i>
-                        <p>حركه شفت الخزينه</p>
+
+                {{-- --------------الصلاحيات --}}
+                @php
+                    $movementOpen = request()->routeIs('admin_accauonts.*');
+                @endphp
+
+                <li class="nav-item has-treeview {{ $movementOpen ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $movementOpen ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-shopping-cart"></i>
+                        <p>
+
+                            الصلاحيات
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
+
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin_accauonts.index') }}"
+                                class="nav-link {{ request()->routeIs('admin_accauonts.*') ? 'active' : '' }}">
+                                {{-- <i class="nav-icon fas fa-file-invoice"></i> --}}
+                                <p> المستخدمين</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-users-cog"></i>
-                        <p>الصلاحيات</p>
+                {{-- ---حركه شفت الخزينه --}}
+                @php
+                    $movementOpen = request()->routeIs('admins_shift.*');
+                @endphp
+
+                <li class="nav-item has-treeview {{ $movementOpen ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $movementOpen ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-shopping-cart"></i>
+                        <p>
+
+                            حركه شفت الخزينه
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
+
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admins_shift.index') }}"
+                                class="nav-link {{ request()->routeIs('admins_shift.*') ? 'active' : '' }}">
+                                {{-- <i class="nav-icon fas fa-file-invoice"></i> --}}
+                                <p> شفتات الخزن</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
+                {{-- --------------------نهايه شفت الخزينه---------- --}}
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-users-cog"></i>

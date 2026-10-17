@@ -33,7 +33,7 @@
     @endif
 
 
-    <div class="row">
+  <div class="row">
         <div class="col-11">
 
             <div class="card">
@@ -53,38 +53,33 @@
 
                         <div class="row">
 
-                            {{-- العمود الأول --}}
+                            {{-- ===================== العمود الأول: البيانات الأساسية ===================== --}}
                             <div class="col-md-6">
 
-                                <label style="display:none ">باركود الصنف (اختياري)</label>
-                                <input style="display:none" name="barcode" id="barcode" class="form-control"
-                                    value="{{ old('barcode') }}">
-
-
-                                @error('barcode')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
+                                <label>باركود الصنف</label>
+                                <input name="barcode" id="barcode" class="form-control"
+                                    value="{{ old('barcode', 'PRD-' . time()) }}" readonly>
                                 <br />
-
 
                                 <label>اسم الصنف</label>
                                 <input name="name" id="name" class="form-control" value="{{ old('name') }}">
-
                                 @error('name')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                                 <br />
+
                                 <label>نوع الصنف</label>
                                 <select name="item_type" id="item_type" class="form-control">
                                     <option value="">اختار نوع الصنف</option>
-                                    <option value="1" {{ old('item_type') == 1 ? 'selected' : '' }}>مخزني</option>
-                                    <option value="2" {{ old('item_type') == 2 ? 'selected' : '' }}>استهلاكي</option>
-                                    <option value="3" {{ old('item_type') == 3 ? 'selected' : '' }}>عهده</option>
+                                    <option value="1" {{ old('item_type') == 1 ? 'selected' : '' }}>صنف مخزني (يُضاف للمخزون ويُباع)</option>
+                                    <option value="2" {{ old('item_type') == 2 ? 'selected' : '' }}>صنف استهلاكي (تاريخ انتاج وانتهاء)</option>
+                                    <option value="3" {{ old('item_type') == 3 ? 'selected' : '' }}>عهدة (مسؤولية موظف/جهة معينة)</option>
                                 </select>
                                 @error('item_type')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                                 <br />
+
                                 <label>فئة الصنف</label>
                                 <select name="inv_itemscard_categories_id" id="inv_itemscard_categories_id"
                                     class="form-control">
@@ -97,23 +92,23 @@
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                                 <br />
-                                 <label>صنف الاب له</label>
 
-                                    <select name="parent_inv_itemscard_id" id="parent_inv_itemscard_id" class="form-control">
-                                        <option value="">اختر الوحدة</option>
-
-                                        @foreach($items as $info)
-
-                                            <option value="{{ $info->id }}">
-                                                {{ $info->name }}
-                                            </option>
-
-                                        @endforeach
-                                    </select>
-                                       @error('parent_inv_itemscard_id')
+                                <label>الصنف الرئيسي (المرتبط به)</label>
+                                <select name="parent_inv_itemscard_id" id="parent_inv_itemscard_id"
+                                    class="form-control">
+                                    <option value="">اختر الصنف الرئيسي</option>
+                                    @foreach($items as $info)
+                                        <option value="{{ $info->id }}">
+                                            {{ $info->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('parent_inv_itemscard_id')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
-                                <label>وحده قياس صنف الأب</label>
+                                <br />
+
+                                <label>وحدة القياس الكبيرة (وحدة الصنف الرئيسي)</label>
                                 <select name="uom_id" id="uom_id" class="form-control">
                                     <option value="">اختر الوحده</option>
                                     @foreach($parent_inv_itemscardid as $item)
@@ -126,71 +121,75 @@
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                                 <br />
-                                 <label>هل للصنف سعر ثابت </label>
 
+                                <label>هل السعر ثابت ولا يتغيّر في الفواتير؟</label>
                                 <select name="has_fixed_price" id="has_fixed_price" class="form-control">
-
-                                    <option value="">اختر الوحدة</option>
-
+                                    <option value="">اختر</option>
                                     <option value="1" {{ old('has_fixed_price') == '1' ? 'selected' : '' }}>
-                                        نعم ثابت ولايتغير في الفواتير
+                                        نعم، السعر ثابت ولا يمكن تعديله في الفواتير
                                     </option>
-
                                     <option value="0" {{ old('has_fixed_price') == '0' ? 'selected' : '' }}>
-                                        لا
+                                        لا، السعر قابل للتعديل
                                     </option>
-
                                 </select>
-                                 @error('has_fixed_price')
-                                 <span class="text-danger">{{ $message }}</span>
-                                 @enderror
-                                 <br/>
-                                <label>هل له وحدة تجزئة ابن</label>
+                                @error('has_fixed_price')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                                <br />
 
+                                <label>هل يُباع أيضًا بوحدة أصغر (تجزئة)؟</label>
                                 <select name="dose_has_retailunit" id="dose_has_retailunit" class="form-control">
-
-                                    <option disabled selected value="">اختر الوحدة</option>
-
+                                    <option disabled selected value="">اختر</option>
                                     <option value="1" {{ old('dose_has_retailunit') == '1' ? 'selected' : '' }}>
-                                        نعم يوجد
+                                        نعم، يوجد وحدة بيع أصغر
                                     </option>
-
-                                    <option value="0" {{ old('dose_has_retailunit') == '0' ? 'selected' : '' }}>
-                                        لا يوجد
-                                    </option>
-
+                                    {{-- <option value="0" {{ old('dose_has_retailunit') == '0' ? 'selected' : '' }}>
+                                        لا، الصنف يُباع بوحدته الأساسية فقط
+                                    </option> --}}
                                 </select>
-
                                 @error('dose_has_retailunit')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
-
                                 <br />
+
+                                <label>حالة التفعيل</label>
+                                <select name="active" id="active" class="form-control">
+                                    <option value="1" {{ old('active') == 1 ? 'selected' : '' }}>مفعل</option>
+                                    <option value="0" {{ old('active') == 0 ? 'selected' : '' }}>غير مفعل</option>
+                                </select>
+                                @error('active')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                                <br />
+
+                            </div>
+
+                            {{-- ===================== العمود الثاني: الأسعار والوحدات ===================== --}}
+                            <div class="col-md-6">
+
+                                <h5 style="color:#555; border-bottom:1px solid #eee; padding-bottom:5px;">
+                                    إعدادات وأسعار الوحدة الكبيرة (وحدة الصنف الرئيسي)
+                                </h5>
+
                                 <div id="retail_uom_div">
 
-                                    <label>وحدة قياس التجزئة الابن بنسبه للاب <span class="parent_uom_name"
-                                            style="color: green">
-
-                                        </span></label>
-
+                                    <label>الوحدة الصغيرة (وحدة البيع بالتجزئة)
+                                        <span class="parent_uom_name" style="color: green"></span>
+                                    </label>
                                     <select name="retail_uom" id="retail_uom" class="form-control">
                                         <option value="">اختر الوحدة</option>
-
                                         @foreach($parent_inv_itemscardid_children as $info)
-
                                             <option value="{{ $info->id }}">
                                                 {{ $info->name }}
                                             </option>
-
                                         @endforeach
-
                                     </select>
-                                    <label>عدد وحدات التجزئه في <span class="parent_uom_name" style="color: green">
+                                    <br />
 
-                                        </span></label>
-
+                                    <label>كام وحدة صغيرة بتساوي وحدة كبيرة واحدة من
+                                        <span class="parent_uom_name" style="color: green"></span>
+                                    </label>
                                     <div style="display:flex; gap:10px; align-items:center;">
-
                                         <input type="number" name="retail_uom_quantity_to_parent"
                                             id="retail_uom_quantity_to_parent" class="form-control"
                                             value="{{ old('retail_uom_quantity_to_parent') }}">
@@ -200,12 +199,10 @@
                                     @enderror
                                     <br />
 
-                                    <label>السعر قطاعي بوحده <span class="parent_uom_name" style="color: green">
-
-                                        </span></label>
-
+                                    <label>سعر البيع للمستهلك (قطاعي) بوحدة
+                                        <span class="parent_uom_name" style="color: green"></span>
+                                    </label>
                                     <div style="display:flex; gap:10px; align-items:center;">
-
                                         <input type="number" name="price" id="price" class="form-control"
                                             value="{{ old('price') }}">
                                     </div>
@@ -213,12 +210,11 @@
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                     <br />
-                                    <label> السعر نص جمله بوحده <span class="parent_uom_name" style="color: green">
 
-                                        </span></label>
-
+                                    <label>سعر نصف الجملة بوحدة
+                                        <span class="parent_uom_name" style="color: green"></span>
+                                    </label>
                                     <div style="display:flex; gap:10px; align-items:center;">
-
                                         <input type="number" name="nos_gomla_price" id="nos_gomla_price"
                                             class="form-control" value="{{ old('nos_gomla_price') }}">
                                     </div>
@@ -226,12 +222,11 @@
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                     <br />
-                                    <label>السعر جمله بوحده <span class="parent_uom_name" style="color: green">
 
-                                        </span></label>
-
+                                    <label>سعر الجملة بوحدة
+                                        <span class="parent_uom_name" style="color: green"></span>
+                                    </label>
                                     <div style="display:flex; gap:10px; align-items:center;">
-
                                         <input type="number" name="wholesale_price" id="wholesale_price"
                                             class="form-control" value="{{ old('wholesale_price') }}">
                                     </div>
@@ -239,35 +234,34 @@
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                     <br />
-                                    <label>السعر تكلفه الشراء بوحده الجمله <span class="parent_uom_name"
-                                            style="color: green">
 
-                                        </span></label>
-
+                                    <label>سعر التكلفة (شراء) بوحدة
+                                        <span class="parent_uom_name" style="color: green"></span>
+                                    </label>
                                     <div style="display:flex; gap:10px; align-items:center;">
-
-                                        <input type="number" name="coast_price" id="coast_price" class="form-control"
-                                            value="{{ old('coast_price') }}">
+                                        <input type="number" name="coast_price" id="coast_price"
+                                            class="form-control" value="{{ old('coast_price') }}">
                                     </div>
                                     @error('coast_price')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                     <br />
 
-
                                 </div>
+
+                                <h5 style="color:#555; border-bottom:1px solid #eee; padding-bottom:5px; margin-top:15px;">
+                                    أسعار الوحدة الصغيرة (وحدة البيع بالتجزئة)
+                                </h5>
+
                                 {{-- -------------------------------------------------- --}}
                                 <div>
-                                    <label>السعر قطاعي بوحده <span class="retail_uom" style="color: green">
-
-                                        </span> <span class="parent_uom_name" style="color: green">
-
-                                        </span> </label>
-
+                                    <label>سعر البيع للمستهلك (قطاعي) بوحدة
+                                        <span class="retail_uom" style="color: green"></span>
+                                        <span class="parent_uom_name" style="color: green"></span>
+                                    </label>
                                     <div style="display:flex; gap:10px; align-items:center;">
-
-                                        <input type="number" name="retail_price" id="retail_price" class="form-control"
-                                            value="{{ old('retail_price') }}">
+                                        <input type="number" name="retail_price" id="retail_price"
+                                            class="form-control" value="{{ old('retail_price') }}">
                                     </div>
                                     @error('retail_price')
                                         <span class="text-danger">{{ $message }}</span>
@@ -275,16 +269,13 @@
                                 </div>
                                 <br />
 
-                                    {{-- -------------------------------------------------- --}}
-                                     <div>
-                                    <label>السعر نص الجمله بوحده <span class="retail_uom" style="color: green">
-
-                                        </span> <span class="parent_uom_name" style="color: green">
-
-                                        </span></label>
-
+                                {{-- -------------------------------------------------- --}}
+                                <div>
+                                    <label>سعر نصف الجملة بوحدة
+                                        <span class="retail_uom" style="color: green"></span>
+                                        <span class="parent_uom_name" style="color: green"></span>
+                                    </label>
                                     <div style="display:flex; gap:10px; align-items:center;">
-
                                         <input type="number" name="nos_gomla_price_retail" id="nos_gomla_price_retail"
                                             class="form-control" value="{{ old('nos_gomla_price_retail') }}">
                                     </div>
@@ -293,56 +284,37 @@
                                     @enderror
                                 </div>
                                 <br />
-                                <label>السعر الجمله بوحده <span class="retail_uom" style="color: green">
 
-                                    </span> <span class="parent_uom_name" style="color: green">
-
-                                    </span></label>
-
+                                <label>سعر الجملة بوحدة
+                                    <span class="retail_uom" style="color: green"></span>
+                                    <span class="parent_uom_name" style="color: green"></span>
+                                </label>
                                 <div style="display:flex; gap:10px; align-items:center;">
-
                                     <input type="number" name="wholesale_price_retail" id="wholesale_price_retail"
                                         class="form-control" value="{{ old('wholesale_price_retail') }}">
                                 </div>
                                 @error('wholesale_price_retail')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
-                                <br/>
-                                    <label>السعر الشراء بوحده <span class="retail_uom" style="color: green">
+                                <br />
 
-                                </span> <span class="parent_uom_name" style="color: green">
+                                <label>سعر التكلفة (شراء) بوحدة
+                                    <span class="retail_uom" style="color: green"></span>
+                                    <span class="parent_uom_name" style="color: green"></span>
+                                </label>
+                                <div style="display:flex; gap:10px; align-items:center;">
+                                    <input type="number" name="coast_price_retail" id="coast_price_retail"
+                                        class="form-control" value="{{ old('coast_price_retail') }}">
+                                </div>
+                                @error('coast_price_retail')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                                <br />
+                                <input type="file" name="image" id="image">
 
-                                </span></label>
-
-                            <div style="display:flex; gap:10px; align-items:center;">
-
-                                <input type="number" name="coast_price_retail" id="coast_price_retail" class="form-control"
-                                    value="{{ old('coast_price_retail') }}">
                             </div>
-                            @error('coast_price_retail')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                            </div>
-                            <br />
-
 
                         </div>
-                        <br />
-                        {{-- -------------------------------------------------- --}}
-
-
-
-
-                        <label>حالة التفعيل</label>
-                        <select name="active" id="active" class="form-control">
-
-                            <option  value="1" {{ old('active') == 1 ? 'selected' : '' }}>مفعل</option>
-                            <option value="0" {{ old('active') == 0 ? 'selected' : '' }}>غير مفعل</option>
-                        </select>
-                        @error('active')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                        <br />
 
                 </div>
 

@@ -11,7 +11,7 @@ class AccauontTypeController extends Controller
 
     public function index()
     {
-        $data=AccountType::select()->orderBy('id','DESC')->paginate(PAGINATION_COUNT);
+        $data=AccountType::select()->orderBy('relatedternalaccounts','DESC')->paginate(PAGINATION_COUNT);
         return view('admin.accauont_types.index',compact('data'));
 
     }

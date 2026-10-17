@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InvuomRequest;
 use App\Models\Inv_uom;
+use App\Models\Suppliers_with_orders_details;
 use Illuminate\Http\Request;
 
 class Inv_uomController extends Controller
@@ -74,6 +75,11 @@ public function search(Request $request)
 
  public function edit($id){
         $data=Inv_uom::find($id);
+        // التحقق ان الوحده اذا تم استخدامها من قبل او لا
+        $checkuintid = Suppliers_with_orders_details::where('unit_id', $id)->exists();
+        if ($checkuintid) {
+         return redirect()->back()->with('error', 'لا يمكن تعديل الوحدة لأنها مستخدمة من قبل في فواتير المبيعات والمشتريات');
+         }
         return view('admin.inv_uom.edit',compact('data'));
     }
      public function update($id,InvuomRequest $request){
@@ -94,6 +100,11 @@ $data->save();
          public function delete_Inv_uom($id)
 {
     $delete_Inv_uom = Inv_uom::find($id);
+     // التحقق ان الوحده اذا تم استخدامها من قبل او لا
+        $checkuintid = Suppliers_with_orders_details::where('unit_id', $id)->exists();
+        if ($checkuintid) {
+         return redirect()->back()->with('error', 'لا يمكن حذف الوحدة لأنها مستخدمة من قبل في فواتير المبيعات والمشتريات');
+         }
 
     if (!$delete_Inv_uom) {
         return redirect()->back()->with('error', 'السجل غير موجود');

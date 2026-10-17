@@ -107,7 +107,7 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $info->name }}</td>
                                             <td>{{ $info->active == 1 ? 'مفعل' : 'غير مفعل' }}</td>
-                                            <td>{{ $info->relatedternalaccounts == 1 ? 'نعم مضاف من شاشات الحسابات' : 'لا مضاف من شاشات الحسابات' }}</td>
+                                            <td>{{ $info->relatedternalaccounts == 1 ? 'نعم مضافه من شاشات الحسابات' : 'ليست مضافه من شاشات الحسابات' }}</td>
 
                                         </tr>
                                     @endforeach

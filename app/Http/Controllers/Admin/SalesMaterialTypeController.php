@@ -45,7 +45,7 @@ $data->save();
             'date' => now()->toDateString(),
 
         ]);
-        return redirect()->route('admin.SalesMaterialTypeController.create')->with('success','تم اضافه الفئه بنجاح');
+        return redirect()->route('admin.sales_material_types.index')->with('success','تم اضافه الفئه بنجاح');
     }
     public function delete_SalesMaterialType($id){
         $delete_SalesMaterialType=SalesMaterialType::find($id);

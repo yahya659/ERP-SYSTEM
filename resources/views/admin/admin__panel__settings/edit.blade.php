@@ -107,12 +107,40 @@
                                         <select name="supplier_parent_number" id="supplier_parent_number" class="form-control">
 
                                             @foreach ($parient_accauont as $info)
-                                            <option value="{{ $info->id }}" {{ old('customer_parent_number', $data->supplierparentnumber) == $info->id ? 'selected' : '' }}>
+                                            <option value="{{ $info->id }}" {{ old('supplier_parent_number', $data->supplier_parent_number) == $info->id ? 'selected' : ''  }}>
                                                     {{ $info->name }}
                                             </option>
                                              @endforeach
                                         </select>
                                         @error('supplier_parent_number')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group">
+                                        <label>حساب الاب للمندوبين بالشجره المحاسبيه</label>
+                                        <select name="delegates_parent_number" id="delegates_parent_number" class="form-control">
+
+                                            @foreach ($parient_accauont as $info)
+                                            <option value="{{ $info->id }}" {{ old('delegates_parent_number', $data->delegates_parent_number) == $info->id ? 'selected' : ''  }}>
+                                                    {{ $info->name }}
+                                            </option>
+                                             @endforeach
+                                        </select>
+                                        @error('delegates_parent_number')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group">
+                                        <label>حساب الاب للموظفين بالشجره المحاسبيه</label>
+                                        <select name="employees_parent_number" id="employees_parent_number" class="form-control">
+
+                                            @foreach ($parient_accauont as $info)
+                                            <option value="{{ $info->id }}" {{ old('employees_parent_number', $data->employees_parent_number) == $info->id ? 'selected' : ''  }}>
+                                                    {{ $info->name }}
+                                            </option>
+                                             @endforeach
+                                        </select>
+                                        @error('employees_parent_number')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>

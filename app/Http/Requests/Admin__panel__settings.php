@@ -33,6 +33,8 @@ class Admin__panel__settings extends FormRequest
             'active'=>'required|in:0,1',
             'customer_parent_number'=>'required',
             'supplier_parent_number'=>'required',
+            'delegates_parent_number'=>'required',
+            'employees_parent_number'=>'required',
 
         ];
 
@@ -47,6 +49,8 @@ class Admin__panel__settings extends FormRequest
             'phone.required'=>'حقل الهاتف مطلوب',
             'customer_parent_number.required'=>'حقل اسم للعملاء الاب مطلوب',
             'supplier_parent_number.required'=>'حقل اسم للموردين الاب مطلوب',
+            'delegates_parent_number.required'=>'حقل اسم المندوب الاب مطلوب',
+            'employees_parent_number.required'=>'حقل اسم الموظف الاب مطلوب',
             'active.required'=>'حقل التفعيل مطلوب',
             'active.in'=>'حقل التفعيل يجب ان يكون 0 او 1',
 

@@ -89,11 +89,7 @@ $data->save();
     if (!$delete_stores) {
         return redirect()->back()->with('error', 'السجل غير موجود');
     }
-
-
-
     $delete_stores->delete();
-
     return redirect()
         ->route('admin.stores.index')
         ->with(['success' => 'تم حذف المخزن بنجاح']);

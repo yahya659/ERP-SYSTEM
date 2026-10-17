@@ -56,7 +56,7 @@
                         </a>
 
                     </div>
-                    <label>البحث بالاسم</label>
+                    {{-- <label>البحث بالاسم</label> --}}
                     <div class="card-header">
 
                         <h3 class="card-title card_title_center">بيانات المخازن</h3>

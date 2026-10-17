@@ -86,7 +86,7 @@ Accauont::create([
  }else{
         return redirect()->back()->with('error', 'عفوا الاسم موجود من قبل')->withInput();
         }
-          return redirect()->route('Suppliers.index')->with('success', 'تم إضافة حساب العميل بنجاح');
+          return redirect()->route('Suppliers.index')->with('success', 'تم إضافة حساب المورد بنجاح');
 
 
     }

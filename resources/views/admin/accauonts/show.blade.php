@@ -5,7 +5,7 @@
 @endsection
 
 @section('contentheader')
-   تفاصيل 
+   تفاصيل
 @endsection
 @section('contentlink')
    تفاصيل الحساب المالي
@@ -59,12 +59,20 @@
 
                 <tr>
                     <th>حالة الرصيد</th>
-                    <td>
-                        {{
-        $data->start_balance_status == 0 ? 'متزن' :
-        ($data->start_balance_status == 1 ? 'مدين' : 'دائن')
-        }}
-                    </td>
+                   <td>
+    {{
+
+
+        $data->current_balance > 0 ? 'مدين  (عليه)' :
+        ($data->current_balance < 0 ? 'دائن  (له)' : 'متزن')
+    }}
+     <p style="
+    text-decoration: underline;
+    color: {{ $data->current_balance < 0 ? 'green' : 'red' }};
+">
+    {{ $data->current_balance }}
+</p>
+</td>
                 </tr>
 
 
