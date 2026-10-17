@@ -5,9 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ItemCardRequest;
 use App\Models\Inv_uom;
+use App\Models\InvItem_card_Movement;
+use App\Models\InvItemBatch;
 use App\Models\ItemCard;
 use App\Models\InvItemscardCategory;
+use App\Models\Store;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+use Illuminate\Support\Str;
 
 class ItemCardController extends Controller
 {
@@ -59,6 +65,12 @@ $parent_inv_itemscardid_children = Inv_uom::where('com_code', $com_code)->where(
     if (empty($barcode)) {
         $barcode = 'PRD-' . time();
     }
+    // رفع الصوره
+    $path = null;
+
+if ($request->hasFile('image')) {
+    $path = $request->file('image')->store('items', 'public');
+}
 
     ItemCard::create([
         'name' => $request->name,
@@ -90,6 +102,9 @@ $parent_inv_itemscardid_children = Inv_uom::where('com_code', $com_code)->where(
 'Quantity_retail' => $request->Quantity_retail ?? 0,
 'Quantity_all_retail' => $request->Quantity_all_retail ?? 0,
         'price' => $request->price ?? 0,
+        'image'=>$path,
+
+
     ]);
 
     return redirect()
@@ -125,6 +140,18 @@ public function update(ItemCardRequest $request, $id)
             ->route('item_card.index')
             ->with('error', 'الصنف غير موجود');
     }
+$path = $item->image;
+
+if ($request->hasFile('image')) {
+
+    // حذف الصورة القديمة
+    if ($item->image && Storage::disk('public')->exists($item->image)) {
+        Storage::disk('public')->delete($item->image);
+    }
+
+    // حفظ الصورة الجديدة
+    $path = $request->file('image')->store('items', 'public');
+}
     $item->update([
         'barcode' => $request->barcode,
         'name' => $request->name,
@@ -139,10 +166,11 @@ public function update(ItemCardRequest $request, $id)
          'retail_price' => $request->retail_price,
         'wholesale_price' => $request->wholesale_price,
         'price' => $request->price,
+        'image'=>$path,
     ]);
 
     return redirect()
-        ->route('item_card.edit', $id)
+        ->route('item_card.index', $id)
         ->with('success', 'تم تحديث البيانات بنجاح');
 }
        public function destroy(string $id)
@@ -156,21 +184,79 @@ public function update(ItemCardRequest $request, $id)
         ->with(['success' => 'تم حذف فئه  بنجاح']);
 
     }
-    public function search(Request $request)
+public function search(Request $request)
 {
     $search = $request->input('search');
+    $itemCode = $request->input('item_code');
 
-    $data = ItemCard::where('name', 'LIKE', '%' . $search . '%')
+    $data = ItemCard::query()
+        ->when($search, function ($query) use ($search) {
+            $query->where('name', 'LIKE', '%' . $search . '%');
+        })
+        ->when($itemCode, function ($query) use ($itemCode) {
+            $query->where('item_code', 'LIKE', '%' . $itemCode . '%');
+        })
         ->paginate(3)
         ->withQueryString();
 
-      return view('admin.itemcard.index', compact('data', 'search'));
+    return view('admin.itemcard.index', compact('data', 'search', 'itemCode'));
 }
    public function show(string $id)
-    {
-        //
-            $data = ItemCard::findOrFail($id);
-        return view('admin.itemcard.show',compact('data'));
+{
+    $data = ItemCard::findOrFail($id);
+    // حساب اخر عدد في كل المخازن 
+     $totalQuantityAllStores = InvItemBatch::where('item_code', $data->item_code)
+    ->where('com_code', auth()->guard('admin')->user()->com_code)
+    ->sum('quantity');
+
+    $stores = Store::where('active', 1)
+        ->where('com_code', $data->com_code)
+        ->get();
+
+    $selectedStore = request('store_id');
+
+    $storeQuantity = null;
+
+    if ($selectedStore == 'all') {
+
+        $storeQuantity = InvItem_card_Movement::where('item_code', $data->item_code)
+            ->orderBy('id', 'DESC')
+            ->first()?->quantity_after_move;
+
+    } elseif ($selectedStore) {
+
+        $storeQuantity = InvItem_card_Movement::where('item_code', $data->item_code)
+            ->where('store_id', $selectedStore)
+            ->orderBy('id', 'DESC')
+            ->first()?->quantity_after_move_store;
     }
+
+    // حركات الصنف
+    $movementsQuery = InvItem_card_Movement::with([
+        'movementType',
+        'movementCategory',
+        'addedBy',
+        'store'
+    ])
+        ->where('item_code', $data->item_code);
+
+    // إذا اختار مخزن معين
+    if ($selectedStore && $selectedStore != 'all') {
+        $movementsQuery->where('store_id', $selectedStore);
+    }
+
+    $movements = $movementsQuery
+        ->orderBy('id', 'DESC')
+        ->get();
+
+    return view('admin.itemcard.show', compact(
+        'data',
+        'stores',
+        'selectedStore',
+        'storeQuantity',
+        'movements',
+        'totalQuantityAllStores'
+    ));
+}
 
 }

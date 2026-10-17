@@ -52,7 +52,7 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title card_title_center">بيانات الخزن</h3>
+                        {{-- <h3 class="card-title card_title_center">بيانات الخزن</h3> --}}
                         <a href="{{ route('admin.treasuries.create') }}" class="btn btn-sm btn-success">
                             اضافة جديد
                         </a>
@@ -104,8 +104,8 @@
                                     <th>مسلسل</th>
                                     <th>اسم الخزن</th>
                                     <th>المخزن الرئيسي</th>
-                                    <th>اخر صرف</th>
-                                    <th>اخر تحصيل</th>
+                                    <th>اخر صرف(رقم السند الصرف)</th>
+                                    <th>اخر تحصيل(رقم السند التحصيل)</th>
                                     <th>الحالة</th>
 
                                     <th>#</th>
@@ -118,8 +118,8 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $info->name }}</td>
                                             <td>{{ $info->is_master == 1 ? 'نعم' : 'لا' }}</td>
-                                            <td>{{ $info->last_isal_exchange }}</td>
-                                            <td>{{ $info->last_isal_collection }}</td>
+                                            <td>{{ $info->last_isal_exchange *1 }}</td>
+                                            <td>{{ $info->last_isal_collection *1 }}</td>
                                             <td>{{ $info->active == 1 ? 'مفعل' : 'غير مفعل' }}</td>
 
                                             <td>

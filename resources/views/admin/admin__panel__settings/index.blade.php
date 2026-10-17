@@ -72,9 +72,22 @@
                             </tr>
                             <tr>
                                 <th>حساب الاب للموردين بالشجره المحاسبيه</th>
-                                <td>اسم الحساب المالي :   {{ $data->supplierparentnumber->name ?? 'لا يوجد رقم' }}<br/> رقم الحساب المالي :  {{ $data->customerparentnumber->id }}</td>
+                                <td>اسم الحساب المالي :   {{ $data->supplierparentnumber->name ?? 'لا يوجد رقم' }}<br/> رقم الحساب المالي :  {{ $data->supplierparentnumber->id }}</td>
 
                             </tr>
+                            <tr>
+                                <th>حساب الاب للمندوبين بالشجره المحاسبيه</th>
+                                <td>اسم الحساب المالي :   {{ $data->delegatesparentnumber->name ?? 'لا يوجد رقم' }}<br/> رقم الحساب المالي :  {{ $data->delegatesparentnumber->id }}</td>
+
+                            </tr>
+                         <th>حساب الاب للموظفين بالشجره المحاسبيه</th>
+    <td>
+        اسم الحساب المالي :
+        {{ $data->employeesparentnumber->name ?? 'لا يوجد حساب' }}
+        <br/>
+        رقم الحساب المالي :
+        {{ $data->employeesparentnumber->id ?? 'لا يوجد حساب' }}
+    </td>
                             <tr>
                                 <th>الحاله</th>
                                 <td>{{ $data->active == 1 ? 'مفعل' : 'غير مفعل' }}</td>

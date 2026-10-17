@@ -64,7 +64,7 @@
                                     <div class="form-group">
                                         <label for="last_isal_exchange">اخر  صرف</label>
                                         <input type="text" name="last_isal_exchange" id="last_isal_exchange" class="form-control"
-                                            value="{{ $data->last_isal_exchange }}">
+                                            value="{{ $data->last_isal_exchange }}" readonly>
                                         @error('last_isal_exchange')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -72,7 +72,7 @@
                                     <div class="form-group">
                                         <label for="last_isal_receipt">اخر تحصيل  </label>
                                         <input type="text" name="last_isal_collection" id="last_isal_collection" class="form-control"
-                                            value="{{ $data->last_isal_collection }}">
+                                            value="{{ $data->last_isal_collection }}" readonly>
                                         @error('last_isal_collection')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror

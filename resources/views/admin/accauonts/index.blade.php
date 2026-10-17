@@ -5,10 +5,10 @@
 @endsection
 
 @section('contentheader')
-    الحسابات الماليه
+    الحسابات الماليه (الشجره المحاسبيه)
 @endsection
 @section('contentlink')
-    الحسابات الماليه
+    الحسابات الماليه (الشجره المحاسبيه)
 
 @endsection
 @section('this is teast')
@@ -53,7 +53,7 @@
             @if($data)
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title card_title_center">الحسابات الماليه</h3>
+                        <h3 class="card-title card_title_center"> الحسابات الماليه (الشجره المحاسبيه)</h3>
                         <a href="{{ route('acaauonts.create') }}" class="btn btn-sm btn-success">
                             اضافه جديد
                         </a>
@@ -127,9 +127,8 @@
                                     <th>هل اب</th>
                                     <th>الحساب الاب</th>
                                     <th>الرصيد</th>
-                                    {{-- <th>ملاحضات</th> --}}
-                                    {{-- <th>هل هو مدين او داين او متزن</th> --}}
-                                    <th>حاله التفعيل (هل مورشف)</th>
+                                    <th>حالة الرصيد</th>
+                                    <th> التفعيل </th>
                                     <th>#</th>
                                 </thead>
 
@@ -144,18 +143,21 @@
                                             <td>
                                                 {{ $info->parientaccauontnumber ? $info->parientaccauontnumber->name : '-------' }}
                                             </td>
-                                            <td>{{ $info->current_balance }}</td>
-                                            {{-- <td>{{ $info->nodes }}</td> --}}
-                                            {{-- <td>
-                                                {{ $info->start_balance_status == 0 ? 'متزن' : ($info->start_balance_status == 1 ?
-                                                'مدين' : 'دائن') }}
-                                            </td> --}}
-                                            <td>{{ $info->is_archived == 1 ? 'نعم مورشف ' : 'ليس مورشف' }}</td>
+                                            <td>{{ $info->current_balance *1 }}</td>
+
                                             <td>
-                                                <a href="{{ route('acaauonts.edit', $info->id) }}" class="btn btn-sm btn-success">
+                                                {{ $info->current_balance > 0 ? 'مدين  (عليه)' : ($info->current_balance < 0 ? 'دائن  (له)' : 'متزن') }}
+                                            </td>
+                                            <td>
+                                                {{ $info->is_archived == 1? 'مفعل': ($info->is_parent == 1 ? 'من ميزان المراجعه ' : 'غير مفعل') }}
+
+                                            </td>
+
+                                            <td>
+                                                 @if ($info->accauonttypes->relatedternalaccounts==1)
+                                                 <a href="{{ route('acaauonts.edit', $info->id) }}" class="btn btn-sm btn-success">
                                                     تعديل
                                                 </a>
-
                                                 <form action="{{ route('acaauonts.destroy', $info->id) }}" method="POST"
                                                     class="d-inline-block" style="margin: 0 5px;">
                                                     @csrf
@@ -170,6 +172,17 @@
                                                 <a href="{{ route('acaauonts.show',$info->id) }}" class="btn btn-sm btn-info">
                                                     عرض المزيد
                                                 </a>
+                                                @else
+                                                <a>يعدل من شاشته</a>
+                                                 <a href="{{ route('acaauonts.show',$info->id) }}" class="btn btn-sm btn-info">
+                                                    عرض المزيد
+                                                </a>
+
+
+                                            @endif
+
+
+
                                             </td>
 
                                         </tr>

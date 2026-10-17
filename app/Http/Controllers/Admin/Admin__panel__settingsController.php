@@ -12,7 +12,7 @@ class admin__panel__settingsController extends Controller
 {
     //
     public function index(){
-       $data = Admin_Panel_Setting::with('updatedBy')
+       $data = Admin_Panel_Setting::with('updatedBy','customerparentnumber','supplierparentnumber')
     ->where('com_code', auth()->guard('admin')->user()->com_code)
     ->first();
         if(!empty($data)){
@@ -28,7 +28,7 @@ class admin__panel__settingsController extends Controller
     public function edit(){
         $com_code=auth()->guard('admin')->user()->com_code;
         $data = Admin_Panel_Setting::where('com_code', $com_code)->first();
-        $parient_accauont = Accauont::where('is_parent', 1)->where('com_code', $com_code)->orderBy('id', 'DESC')->get();
+        $parient_accauont = Accauont::where('is_parent',1)->where('com_code', $com_code)->orderBy('id', 'DESC')->get();
 
         return view('admin.admin__panel__settings.edit',compact('data','parient_accauont'));
     }
@@ -42,6 +42,8 @@ class admin__panel__settingsController extends Controller
             $data->address=$request->address;
             $data->customer_parent_number=$request->customer_parent_number;
             $data->supplier_parent_number=$request->supplier_parent_number;
+            $data->delegates_parent_number=$request->delegates_parent_number;
+            $data->employees_parent_number=$request->employees_parent_number;
             $data->updated_by=auth()->guard('admin')->user()->id;
         //    $data->updated_at = date('Y-m-d h:i:s A');
             $data->save();

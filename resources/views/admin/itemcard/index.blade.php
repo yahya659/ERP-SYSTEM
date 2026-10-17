@@ -23,29 +23,37 @@
     <!-- البحث بالاسم -->
     <div class="col-md-6">
 
-        <form action="{{ route('admin.item_card.search') }}" method="GET">
+     <form action="{{ route('admin.item_card.search') }}" method="GET">
 
-            <div class="row align-items-end">
+    <div class="row align-items-end">
 
-                <!-- البحث بالاسم -->
-                <div class="col-md-6">
-                    <label>البحث بالاسم</label>
-                    <input type="text" name="search" class="form-control" placeholder="بحث بالاسم"
-                        value="{{ request('search') }}">
-                </div>
+        <div class="col-md-5">
+            <label>البحث بالاسم</label>
+            <input type="text"
+                   name="search"
+                   class="form-control"
+                   placeholder="بحث بالاسم"
+                   value="{{ request('search') }}">
+        </div>
 
-                <!-- زر البحث -->
-                <div class="col-md-2">
-                    <button class="btn btn-primary w-100" type="submit">
-                        بحث
-                    </button>
+        <div class="col-md-5">
+            <label>البحث بكود الصنف</label>
+            <input type="text"
+                   name="item_code"
+                   class="form-control"
+                   placeholder="بحث بكود الصنف"
+                   value="{{ request('item_code') }}">
+        </div>
 
-                </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100" type="submit">
+                بحث
+            </button>
+        </div>
 
+    </div>
 
-            </div>
-
-        </form>
+</form>
 
     </div>
     <div class="row">
@@ -84,11 +92,16 @@
                                         لا يوجد اصناف بهذا الاسم: {{ $search }}
                                     </div>
                                 @endif
+                                @if(isset($itemCode) && $data->count() == 0)
+                                    <div class="alert alert-danger text-center">
+                                        لا يوجد اصناف بهذا الكود: {{ $itemCode }}
+                                    </div>
+                                @endif
 
 
                        <thead class="custom_thead">
     <tr>
-        <th>المسلسل</th>
+        <th>كود الصنف</th>
         <th>اسم الصنف</th>
         <th>نوع الصنف</th>
         <th>الفئة</th>
@@ -96,6 +109,7 @@
         <th>وحدة الأب</th>
         <th>وحدة التجزئة</th>
         <th>حالة التفعيل</th>
+        <th>صوره </th>
         <th>الإجراء</th>
     </tr>
 </thead>
@@ -108,7 +122,7 @@
 <tr>
 
     <td>
-        {{ $loop->iteration }}
+        {{ $info->item_code }}
     </td>
 
 
@@ -181,7 +195,16 @@
         @endif
 
     </td>
-
+    <td>
+    @if($info->image)
+        <img src="{{ asset('storage/' . $info->image) }}"
+             width="60"
+             height="60"
+             style="object-fit: cover; border-radius: 5px;">
+    @else
+        لا توجد صورة
+    @endif
+</td>
 
 
     <td>

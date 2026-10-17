@@ -145,15 +145,15 @@
                            الخزن الفرعيه الذي تم تسليمها
                         </h5>
 
-                        <h3 class="text-primary font-weight-bold">
+                        {{-- <h3 class="text-primary font-weight-bold">
                             (الفرع الريسي)
-                        </h3>
+                        </h3> --}}
 
                         <hr>
-
+{{-- 
                         <small class="text-muted">
                             يتم تسليم الخزن إلى المخزن الرئيسي
-                        </small>
+                        </small> --}}
 
                     </div>
                     <div class="card-header">
@@ -227,6 +227,7 @@
 
             @endif
             {{-- end-Treasury_Delivery --}}
+
 
 
 

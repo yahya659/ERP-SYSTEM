@@ -30,7 +30,7 @@
 
                 @if(isset($data) && !empty($data))
 
-                <form action="{{ route('item_card.update', $data->id) }}" method="POST">
+                <form action="{{ route('item_card.update', $data->id) }}" method="POST"  enctype="multipart/form-data">
                     @method('PUT')
                     @csrf
 
@@ -140,6 +140,29 @@
                         <option value="1" {{ $data->active == 1 ? 'selected' : '' }}>مفعل</option>
                         <option value="0" {{ $data->active == 0 ? 'selected' : '' }}>غير مفعل</option>
                     </select>
+                    {{-- صورة الصنف --}}
+<label>صورة الصنف</label>
+
+@if($data->image)
+    <div style="margin-bottom: 10px;">
+        <img src="{{ asset('storage/' . $data->image) }}"
+             width="120"
+             height="120"
+             style="object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
+    </div>
+@else
+    <div class="text-muted" style="margin-bottom: 10px;">
+        لا توجد صورة حالية
+    </div>
+@endif
+
+<input type="file" name="image" class="form-control" accept="image/*">
+
+@error('image')
+    <span class="text-danger">{{ $message }}</span>
+@enderror
+
+<br>
 
                     <br>
 

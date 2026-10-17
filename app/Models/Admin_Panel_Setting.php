@@ -10,7 +10,7 @@ class Admin_Panel_Setting extends Model
        protected $table="admin__panel__settings";
     protected $fillable = [//حقول المسموح تعبتها
         'system_name','phone','active','general_alert','address','phone',
-        'added_by','updated_by','com_code','customer_parent_number','supplier_parent_number'
+        'added_by','updated_by','com_code','customer_parent_number','supplier_parent_number','delegates_parent_number','employees_parent_number'
     ];
 public function updatedBy()
 {
@@ -23,5 +23,13 @@ public function customerparentnumber()
 public function supplierparentnumber()
 {
     return $this->belongsTo(Accauont::class, 'supplier_parent_number');
+}
+public function delegatesparentnumber()
+{
+    return $this->belongsTo(Accauont::class, 'delegates_parent_number');
+}
+public function employeesparentnumber()
+{
+    return $this->belongsTo(Accauont::class, 'employees_parent_number');
 }
 }
