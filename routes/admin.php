@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\Suppliers_with_ordersGenralReturnController;
 use App\Http\Controllers\Admin\SuppliersCategoryController;
 use App\Http\Controllers\Admin\SupplierWithOrderController;
 use App\Http\Controllers\Admin\TreasuriesTransactionController;
+use App\Http\Controllers\Admin\SalesInvoiceReturnController;
 use Illuminate\Support\Facades\Route;
 
 define('PAGINATION_COUNT', 10);
@@ -198,6 +199,25 @@ Route::get(
         Route::resource('/itemcardbalances',ItemCardBalancesController::class);
 
         // end-itemvardbuluanse-ارصده الاااصناف
+        // -----------------------------------------------------------------------------
+        //START فواتير مرتجع مبيعات sales_invoice_return
+// حذف الصنف من تفاصيل الفاتوره
+Route::delete(
+    '/sales_invoice_return/delete-item/{id}',
+    [SalesInvoiceReturnController::class, 'deleteItem']
+)->name('sales_invoice_return.deleteItem');
+
+         Route::get('/sales_invoice_return/search', [SalesInvoiceReturnController::class,'search'])
+        ->name('sales_invoice_return.search');
+         Route::post('/sales_invoice_return/add-item',[SalesInvoiceReturnController::class, 'addItemToInvoice']
+        )->name('sales_invoice_return.addItem');
+
+   Route::put( '/sales_invoice_return/{id}/approve',
+    [SalesInvoiceReturnController::class, 'sales_approve_invoice']
+)->name('sales_invoice_return.approve');
+
+        Route::resource('sales_invoice_return',SalesInvoiceReturnController::class);
+        //END فواتير مرتجع مبيعات sales_invoice_return
         // -----------------------------------------------------------------------------
         });
 Route::get('/logout',[LoginController::class,'logout'])->name('admin.logout');

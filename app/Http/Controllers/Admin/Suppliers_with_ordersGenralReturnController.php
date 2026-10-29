@@ -451,7 +451,7 @@ $totalPrice = $request->delivery_quantity * $unitPrice;
         'is_main_or_retail_uom' => $isMain,
         'unit_price' => $unitPrice,
         'total_price' => $totalPrice,
-        'order_date' => $request->order_date,
+        'order_date' => date('Y-m-d'),
         'production_date' => $productionDate,
         'expir_date' => $expiryDate,
         'batch_id' => $batch->auto_serial,
@@ -506,11 +506,11 @@ $totalPrice = $request->delivery_quantity * $unitPrice;
 
 // جلب الفاتوره من الباتش
 
+
 public function getItemBatches($item_code)
 {
     $com_code = auth()->guard('admin')->user()->com_code;
 
-    // جلب رقم الفاتورة من الطلب
     $auto_serial = request()->query('auto_serial');
 
     $order = SupplierWithOrder::where('auto_serial', $auto_serial)
@@ -524,24 +524,31 @@ public function getItemBatches($item_code)
         ], 404);
     }
 
-    $batches = InvItemBatch::where('store_id', $order->store_id)
+    $batches = InvItemBatch::with('invuomsid')
+        ->where('store_id', $order->store_id)
         ->where('item_code', $item_code)
         ->where('com_code', $com_code)
         ->where('quantity', '>', 0)
         ->orderBy('auto_serial', 'desc')
-        ->get([
-            'auto_serial',
-            'quantity',
-            'unit_cost_price',
-            'production_date',
-            'expire_date'
-        ]);
+        ->get()
+        ->map(function ($batch) {
+            return [
+                'auto_serial' => $batch->auto_serial,
+                'quantity' => $batch->quantity,
+                'unit_cost_price' => $batch->unit_cost_price,
+                'production_date' => $batch->production_date,
+                'expire_date' => $batch->expire_date,
+                'inv_uoms_id' => $batch->inv_uoms_id,
+                'unit_name' => $batch->invuomsid->name ?? 'غير محددة',
+            ];
+        });
 
     return response()->json([
         'success' => true,
         'batches' => $batches
     ]);
 }
+
     // تعديل الصنف
     public function editdetail(string $id)
 {
@@ -670,7 +677,7 @@ public function destroyDetail($id)
     InvItem_card_Movement::create([
         'inv_itemcard_movements_categories' => 1,
         'item_code' => $detail->item_code,
-        'items_movements_types' => 3,
+        'items_movements_types' => 13,
         'FK_table' => $order->auto_serial,
         'FK_table_details' => 'حذف صنف من فاتورة مرتجع المورد رقم: ' . $order->doc_no,
         'byan' => 'إعادة كمية الصنف إلى الخزن بعد حذفها من تفاصيل المرتجع',

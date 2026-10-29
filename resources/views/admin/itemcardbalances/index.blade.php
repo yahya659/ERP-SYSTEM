@@ -120,7 +120,8 @@
                                                     @if($info->total_quantity > 0)
                                                         <span class="badge badge-success" style="font-size: 14px;">
                                                             اجمالي الكميه في جميع المخازن :
-                                                            {{ number_format($info->total_quantity / 24) }} كرتون
+                                                            {{ number_format($info->total_quantity ) }}
+
                                                         </span>
                                                     @else
                                                         <span class="badge badge-secondary">
@@ -155,7 +156,7 @@
 
                                                                                                     <td>{{ $batch->storeid->name ?? 'لا يوجد' }}</td>
 
-                                                                                                    <td>{{ number_format($batch->quantity /24) }} كرتون</td>
+                                                                                                    <td>{{ number_format($batch->quantity ) }}<br/> ({{ $batch->invuomsid->name }}) </td>
 
                                                                                                     <td>{{ $batch->production_date ?: 'لا يوجد' }}</td>
 

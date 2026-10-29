@@ -434,6 +434,9 @@ public function add_new_details(Request $request)
         'item_code',
         $request->item_code_add
     )->first();
+    $batch_uom_id = !empty($item->retail_uom)
+    ? $item->retail_uom
+    : $item->uom_id;
 
     // تحويل الكمية إلى الوحدة الصغرى (Retail)
     $quantity_retail = $request->delivery_quantity;
@@ -485,7 +488,7 @@ public function add_new_details(Request $request)
     // البحث عن الباتش الموجود بنفس الصنف والسعر وتاريخ الانتهاء
     $batch = InvItemBatch::where('store_id', $order->store_id)
         ->where('item_code', $request->item_code_add)
-        ->where('inv_uoms_id', $item->retail_uom)
+        ->where('inv_uoms_id', $batch_uom_id)
         ->where('unit_cost_price', $request->price_add)
         ->where('expire_date', $request->expir_date)
         ->first();
@@ -522,7 +525,7 @@ if ($batch) {
     $batch = InvItemBatch::create([
         'store_id' => $order->store_id,
         'item_code' => $request->item_code_add,
-        'inv_uoms_id' => $item->retail_uom,
+        'inv_uoms_id' => $batch_uom_id,
         'unit_cost_price' => $request->price_add,
         'quantity' => $quantity_retail,
         'total_cost_price' => $request->total_add,

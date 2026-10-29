@@ -220,7 +220,7 @@
                 </li>
 {{-- ----------------------------المبيعات --}}
                 @php
-                    $movementOpen = request()->routeIs('Sales_Invoice.*');
+                    $movementOpen = request()->routeIs('Sales_Invoice.*','sales_invoice_return.*');
                 @endphp
 
                 <li class="nav-item has-treeview {{ $movementOpen ? 'menu-open' : '' }}">
@@ -237,7 +237,16 @@
                             <a href="{{ route('Sales_Invoice.index') }}"
                                 class="nav-link {{ request()->routeIs('Sales_Invoice.*') ? 'active' : '' }}">
                                 {{-- <i class="nav-icon fas fa-file-invoice"></i> --}}
-                                <p>فواتير المبيعات</p>
+                                <p>  المبيعات</p>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('sales_invoice_return.index') }}"
+                                class="nav-link {{ request()->routeIs('sales_invoice_return.*') ? 'active' : '' }}">
+                                {{-- <i class="nav-icon fas fa-file-invoice"></i> --}}
+                                <p>مرتجع المبيعات العام </p>
                             </a>
                         </li>
                     </ul>

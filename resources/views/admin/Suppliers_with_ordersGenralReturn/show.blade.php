@@ -185,7 +185,7 @@
 
             <div class="modal-body">
 
-                {{-- هنا نستدعي صفحة Blade الأخرى --}}
+                {{--  نستدعي صفحة  --}}
 
               @include('admin.Suppliers_with_ordersGenralReturn.load_approve_invoice', ['data' => $data, 'adminsift' => $adminsift,'treasuriesBalance'=>$treasuriesBalance])
 

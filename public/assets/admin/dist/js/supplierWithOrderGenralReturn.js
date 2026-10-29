@@ -101,9 +101,9 @@ const result = JSON.parse(responseText);
             option.dataset.quantity = batch.quantity;
 
             option.textContent =
-                `باتش رقم ${batch.auto_serial}` +
-                ` | الكمية:  ${batch.quantity/24} كراتين` +
-                ` | السعر: ${batch.unit_cost_price}` +
+    `باتش رقم ${batch.auto_serial}` +
+    ` | الكمية: ${batch.quantity} ${batch.unit_name}` +
+    ` | السعر: ${batch.unit_cost_price}`;
                 (batch.expire_date
                     ? ` | الانتهاء: ${batch.expire_date}`
                     : "");
