@@ -37,17 +37,16 @@ $parent_inv_itemscardid_children = Inv_uom::where('com_code', $com_code)->where(
     /**
      * Store a newly created resource in storage.
      */
-  public function store(ItemCardRequest $request)
+public function store(ItemCardRequest $request)
 {
     $com_code = auth()->guard('admin')->user()->com_code;
 
-    // تحقق من التكرار الاسم
+    // تحقق من تكرار الاسم
     $item_card = ItemCard::where('name', $request->name)
         ->where('com_code', $com_code)
         ->first();
 
     if ($item_card) {
-
         return redirect()->back()
             ->withInput()
             ->with('error', 'الصنف (' . $item_card->name . ') موجود مسبقاً');
@@ -65,12 +64,15 @@ $parent_inv_itemscardid_children = Inv_uom::where('com_code', $com_code)->where(
     if (empty($barcode)) {
         $barcode = 'PRD-' . time();
     }
-    // رفع الصوره
-    $path = null;
 
-if ($request->hasFile('image')) {
-    $path = $request->file('image')->store('items', 'public');
-}
+    // رفع الصورة
+    $path = null;
+    if ($request->hasFile('image')) {
+        $path = $request->file('image')->store('items', 'public');
+    }
+
+    // ===== جديد: هل للصنف وحدة تجزئة؟ =====
+    $hasRetail = (int) $request->dose_has_retailunit === 1;
 
     ItemCard::create([
         'name' => $request->name,
@@ -79,32 +81,37 @@ if ($request->hasFile('image')) {
 
         'item_type' => $request->item_type,
         'inv_itemscard_categories_id' => $request->inv_itemscard_categories_id,
-        'parent_inv_itemscard_id' => $request->parent_inv_itemscard_id ,
+        'parent_inv_itemscard_id' => $request->parent_inv_itemscard_id,
 
-        'dose_has_retailunit' => $request->dose_has_retailunit ?? 0,
-        'retail_uom' => $request->retail_uom,
+        // ===== معدّل: تعتمد على $hasRetail =====
+        'dose_has_retailunit' => $hasRetail ? 1 : 0,
+        'retail_uom' => $hasRetail ? $request->retail_uom : null,
+        'retail_uom_quantity_to_parent' => $hasRetail ? $request->retail_uom_quantity_to_parent : 0,
+
         'uom_id' => $request->uom_id,
-'retail_uom_quantity_to_parent' => $request->retail_uom_quantity_to_parent ?? 0,
         'active' => $request->active ?? 1,
         'date' => now()->toDateString(),
 
         'added_by' => auth()->guard('admin')->id(),
         'com_code' => $com_code,
-        'retail_price' => $request->retail_price ?? 0,
-        'wholesale_price' => $request->wholesale_price ?? 0,
-        'nos_gomla_price' => $request->nos_gomla_price ?? 0,
-        'nos_gomla_price_retail' => $request->nos_gomla_price_retail ?? 0,
-        'wholesale_price_retail' => $request->wholesale_price_retail ?? 0,
-        'coast_price' => $request->coast_price ?? 0,
-        'coast_price_retail' => $request->coast_price_retail ?? 0,
-        'has_fixed_price' => $request->has_fixed_price ?? 0,
-      'Quantity' => $request->Quantity ?? 0,
-'Quantity_retail' => $request->Quantity_retail ?? 0,
-'Quantity_all_retail' => $request->Quantity_all_retail ?? 0,
+
+        // أسعار الوحدة الأساسية (كما هي)
         'price' => $request->price ?? 0,
-        'image'=>$path,
+        'nos_gomla_price' => $request->nos_gomla_price ?? 0,
+        'wholesale_price' => $request->wholesale_price ?? 0,
+        'coast_price' => $request->coast_price ?? 0,
 
+        // ===== معدّل: أسعار التجزئة تُحفظ فقط عند 1 =====
+        'retail_price' => $hasRetail ? $request->retail_price : 0,
+        'nos_gomla_price_retail' => $hasRetail ? $request->nos_gomla_price_retail : 0,
+        'wholesale_price_retail' => $hasRetail ? $request->wholesale_price_retail : 0,
+        'coast_price_retail' => $hasRetail ? $request->coast_price_retail : 0,
 
+        'has_fixed_price' => $request->has_fixed_price ?? 0,
+        'Quantity' => $request->Quantity ?? 0,
+        'Quantity_retail' => $request->Quantity_retail ?? 0,
+        'Quantity_all_retail' => $request->Quantity_all_retail ?? 0,
+        'image' => $path,
     ]);
 
     return redirect()
@@ -134,43 +141,69 @@ if ($request->hasFile('image')) {
 }
 public function update(ItemCardRequest $request, $id)
 {
-    $item = ItemCard::where('id', $id)->where('com_code', auth()->guard('admin')->user()->com_code)->first();
+    $com_code = auth()->guard('admin')->user()->com_code;
+
+    $item = ItemCard::where('id', $id)->where('com_code', $com_code)->first();
     if (!$item) {
         return redirect()
             ->route('item_card.index')
             ->with('error', 'الصنف غير موجود');
     }
-$path = $item->image;
 
-if ($request->hasFile('image')) {
+    // منع تكرار الاسم مع صنف آخر (يتجاهل الصنف الحالي)
+    $duplicate = ItemCard::where('name', $request->name)
+        ->where('com_code', $com_code)
+        ->where('id', '!=', $item->id)
+        ->first();
 
-    // حذف الصورة القديمة
-    if ($item->image && Storage::disk('public')->exists($item->image)) {
-        Storage::disk('public')->delete($item->image);
+    if ($duplicate) {
+        return redirect()->back()
+            ->withInput()
+            ->with('error', 'الصنف (' . $duplicate->name . ') موجود مسبقاً');
     }
 
-    // حفظ الصورة الجديدة
-    $path = $request->file('image')->store('items', 'public');
-}
+    // الصورة
+    $path = $item->image;
+    if ($request->hasFile('image')) {
+        if ($item->image && Storage::disk('public')->exists($item->image)) {
+            Storage::disk('public')->delete($item->image);
+        }
+        $path = $request->file('image')->store('items', 'public');
+    }
+
+    // هل للصنف وحدة تجزئة؟
+    $hasRetail = (int) $request->dose_has_retailunit === 1;
+
     $item->update([
-        'barcode' => $request->barcode,
+        // الباركود لا يتغير عند التعديل
         'name' => $request->name,
         'item_type' => $request->item_type,
         'inv_itemscard_categories_id' => $request->inv_itemscard_categories_id,
         'uom_id' => $request->uom_id,
         'parent_inv_itemscard_id' => $request->parent_inv_itemscard_id,
-        'dose_has_retailunit' => $request->dose_has_retailunit,
-        'retail_uom' => $request->retail_uom,
-        'retail_uom_quantity_to_parent' => $request->retail_uom_quantity_to_parent,
         'active' => $request->active,
-         'retail_price' => $request->retail_price,
-        'wholesale_price' => $request->wholesale_price,
-        'price' => $request->price,
-        'image'=>$path,
+        'has_fixed_price' => $request->has_fixed_price ?? 0,
+
+        // أسعار الوحدة الأساسية (مطلوبة دائمًا بالتحقق)
+        'price' => $request->price ?? 0,
+        'nos_gomla_price' => $request->nos_gomla_price ?? 0,
+        'wholesale_price' => $request->wholesale_price ?? 0,
+        'coast_price' => $request->coast_price ?? 0,
+
+        // التجزئة: تُحفظ فقط عند 1، وتُصفَّر عند 0
+        'dose_has_retailunit' => $hasRetail ? 1 : 0,
+        'retail_uom' => $hasRetail ? $request->retail_uom : null,
+        'retail_uom_quantity_to_parent' => $hasRetail ? $request->retail_uom_quantity_to_parent : 0,
+        'retail_price' => $hasRetail ? $request->retail_price : 0,
+        'nos_gomla_price_retail' => $hasRetail ? $request->nos_gomla_price_retail : 0,
+        'wholesale_price_retail' => $hasRetail ? $request->wholesale_price_retail : 0,
+        'coast_price_retail' => $hasRetail ? $request->coast_price_retail : 0,
+
+        'image' => $path,
     ]);
 
     return redirect()
-        ->route('item_card.index', $id)
+        ->route('item_card.index')
         ->with('success', 'تم تحديث البيانات بنجاح');
 }
        public function destroy(string $id)
@@ -204,7 +237,7 @@ public function search(Request $request)
    public function show(string $id)
 {
     $data = ItemCard::findOrFail($id);
-    // حساب اخر عدد في كل المخازن 
+    // حساب اخر عدد في كل المخازن
      $totalQuantityAllStores = InvItemBatch::where('item_code', $data->item_code)
     ->where('com_code', auth()->guard('admin')->user()->com_code)
     ->sum('quantity');
@@ -232,13 +265,15 @@ public function search(Request $request)
     }
 
     // حركات الصنف
-    $movementsQuery = InvItem_card_Movement::with([
-        'movementType',
-        'movementCategory',
-        'addedBy',
-        'store'
-    ])
-        ->where('item_code', $data->item_code);
+   $movementsQuery = InvItem_card_Movement::with([
+    'movementType',
+    'movementCategory',
+    'addedBy',
+    'store',
+    'itemCard.uomid',
+    'itemCard.retail_uom_id'
+])
+    ->where('item_code', $data->item_code);
 
     // إذا اختار مخزن معين
     if ($selectedStore && $selectedStore != 'all') {

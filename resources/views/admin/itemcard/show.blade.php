@@ -134,31 +134,29 @@
 
     </div>
     <h4 class="mt-4"> سجل حركه الصنف : </h4>
-<form action="{{ route('item_card.show', $data->id) }}" method="GET">
+    <form action="{{ route('item_card.show', $data->id) }}" method="GET">
 
-    <div class="form-group">
-        <label>اختر المخزن :</label>
+        <div class="form-group">
+            <label>اختر المخزن :</label>
 
-        <select name="store_id" class="form-control" onchange="this.form.submit()">
+            <select name="store_id" class="form-control" onchange="this.form.submit()">
 
-            {{-- <option value="">-- اختر المخزن --</option> --}}
+                {{-- <option value="">-- اختر المخزن --</option> --}}
 
-            <option value="all"
-                {{ $selectedStore == 'all' ? 'selected' : '' }}>
-                كل المخازن
-            </option>
-
-            @foreach($stores as $store)
-                <option value="{{ $store->id }}"
-                    {{ $selectedStore == $store->id ? 'selected' : '' }}>
-                    {{ $store->name }}
+                <option value="all" {{ $selectedStore == 'all' ? 'selected' : '' }}>
+                    كل المخازن
                 </option>
-            @endforeach
 
-        </select>
-    </div>
+                @foreach($stores as $store)
+                    <option value="{{ $store->id }}" {{ $selectedStore == $store->id ? 'selected' : '' }}>
+                        {{ $store->name }}
+                    </option>
+                @endforeach
 
-</form>
+            </select>
+        </div>
+
+    </form>
 
     <table class="table table-bordered table-striped">
         <thead>
@@ -175,22 +173,21 @@
 
 
 
-<div class="card bg-success text-white shadow-sm mb-3"
-     style="border-radius: 8px; max-width: 280px;">
-    <div class="card-body text-center p-2">
-        <div style="font-size: 14px;">
-            {{-- <i class="fas fa-warehouse"></i> --}}
-            كمية الكراتين في جميع المخازن :
-        </div>
+        {{-- <div class="card bg-success text-white shadow-sm mb-3" style="border-radius: 8px; max-width: 280px;">
+            <div class="card-body text-center p-2">
+                <div style="font-size: 14px;"> --}}
+                    {{-- <i class="fas fa-warehouse"></i> --}}
+                    {{-- كمية الكراتين في جميع المخازن : --}}
+                {{-- </div> --}}
 
-        <div class="font-weight-bold mt-1" style="font-size: 24px;">
-            {{ number_format($totalQuantityAllStores / 24) }}
-            <small style="font-size: 13px;">كرتون</small>
-        </div>
-    </div>
-</div>
+                {{-- <div class="font-weight-bold mt-1" style="font-size: 24px;">
+                    {{ number_format($totalQuantityAllStores / 24) }}
+                    <small style="font-size: 13px;">كرتون</small>
+                </div> --}}
+            {{-- </div> --}}
+        {{-- </div> --}}
 
-       <tbody>
+        <tbody>
             @forelse($movements as $movement)
 
                 <tr>
@@ -205,17 +202,27 @@
                     <td>{{ $movement->movementType->type}}</td>
                     <td>{{ $movement->movementCategory->name}}</td>
                     <td>{{ $movement->store->name }}</td>
-                    <td>{{ $movement->quantity_befor_move_store /24}} كرتون
-                          <br>
-    {{-- <small>
-        كمية جميع المخازن: {{ $movement->quantity_befor_movement }} قطعة
-    </small> --}}
+                    <td>{{ $movement->quantity_befor_move_store }}
+                        <br>
+                        {{-- <small>
+                            كمية جميع المخازن: {{ $movement->quantity_befor_movement }} قطعة
+                        </small> --}}
                     </td>
-                    <td>{{ $movement->quantity_after_move_store / 24}} كرتون
-                          <br>
-    {{-- <small>
-        كمية جميع المخازن: {{ $movement->quantity_after_move }} قطعة
-    </small> --}}
+                    <td><br/>
+                            {{-- {{ $movement->itemCard->retail_uom_id->name ?? 'غير محددة' }} --}}
+
+    الكمية: {{ $movement->quantity_after_move_store }}
+
+    <br>
+    الصنف: {{ $movement->itemCard->name ?? 'الصنف غير موجود' }}
+
+    <br>
+    {{-- الوحدة: {{ $movement->itemCard->uomid->name ?? 'الوحدة غير موجودة' }} --}}
+
+                        <br>
+                        {{-- <small>
+                            كمية جميع المخازن: {{ $movement->quantity_after_move }} قطعة
+                        </small> --}}
                     </td>
                 </tr>
             @empty

@@ -27,7 +27,7 @@ public function index()
     foreach ($allitemcarddata as $info) {
     $info->batches = InvItemBatch::where('com_code', $com_code)
         ->where('item_code', $info->item_code)
-        ->with('storeid')
+        ->with('storeid','invuomsid')
         ->get();
         $info->total_quantity = $info->batches->sum('quantity');
 }

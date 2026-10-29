@@ -20,70 +20,60 @@ class ItemCardRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
-    {
-        return [
-            //
+  public function rules(): array
+{
+    return [
+        'name' => 'required|string|max:255',
+        'item_type' => 'required|in:1,2,3',
+        'inv_itemscard_categories_id' => 'required|exists:inv_itemscard_categories,id',
+        'parent_inv_itemscard_id' => 'nullable|exists:item_cards,id',
+        'uom_id' => 'required|exists:inv_uoms,id',
+        'active' => 'required|in:0,1',
+        'has_fixed_price' => 'nullable|in:0,1',
+        'barcode' => 'nullable|string|max:255',
+        'item_code' => 'nullable|numeric',
 
-            'name' => 'required|string|max:255',
+        // ===== مطلوب دائمًا =====
+        'dose_has_retailunit' => 'required|in:0,1',
 
-            'item_type' => 'required|in:1,2,3',
+        // أسعار الوحدة الأساسية: مطلوبة في الحالتين
+        'price' => 'required|numeric|min:0',
+        'nos_gomla_price' => 'required|numeric|min:0',
+        'wholesale_price' => 'required|numeric|min:0',
+        'coast_price' => 'required|numeric|min:0',
 
-            'inv_itemscard_categories_id'
-                => 'required|exists:inv_itemscard_categories,id',
+        // ===== مطلوب فقط عند dose_has_retailunit = 1 =====
+        'retail_uom' => 'required_if:dose_has_retailunit,1|nullable|string|max:255',
+        'retail_uom_quantity_to_parent' => 'required_if:dose_has_retailunit,1|nullable|numeric|gt:0',
+        'retail_price' => 'required_if:dose_has_retailunit,1|nullable|numeric|min:0',
+        'nos_gomla_price_retail' => 'required_if:dose_has_retailunit,1|nullable|numeric|min:0',
+        'wholesale_price_retail' => 'required_if:dose_has_retailunit,1|nullable|numeric|min:0',
+        'coast_price_retail' => 'required_if:dose_has_retailunit,1|nullable|numeric|min:0',
 
+        'image' => 'nullable|image|max:2048',
 
-            'parent_inv_itemscard_id'
-                => 'nullable|exists:item_cards,id',
-
-
-            'dose_has_retailunit' => 'nullable|in:0,1',
-
-
-            'retail_uom'
-                => 'nullable|string|max:255',
-
-
-            'uom_id'
-                => 'required|exists:inv_uoms,id',
-
-
-            'retail_uom_quantity_to_parent'
-                => 'nullable|numeric',
-
-
-            'active'
-                => 'required|in:0,1',
-            'retail_price'
-                => 'required',
-            'wholesale_price'
-                => 'required',
-            'price'
-                => 'nullable',
-
-
-            'barcode'
-                => 'nullable|string|max:255',
-
-
-            'item_code'=> 'nullable|numeric',
-            'nos_gomla_price' => 'nullable|numeric',
-'nos_gomla_price_retail' => 'nullable|numeric',
-'wholesale_price_retail' => 'nullable|numeric',
-'coast_price' => 'nullable|numeric',
-'coast_price_retail' => 'nullable|numeric',
-
-'has_fixed_price' => 'nullable|in:0,1',
-
-'Quantity' => 'nullable|numeric',
-'Quantity_retail' => 'nullable|numeric',
-'Quantity_all_retail' => 'nullable|numeric',
-
-        ];
-    }
+        'Quantity' => 'nullable|numeric',
+        'Quantity_retail' => 'nullable|numeric',
+        'Quantity_all_retail' => 'nullable|numeric',
+    ];
+}
      public function messages()
     {
         return [
+            'dose_has_retailunit.required' => 'حدد هل يُباع الصنف بوحدة تجزئة أم لا',
+
+'price.required' => 'ادخل سعر البيع للمستهلك',
+'nos_gomla_price.required' => 'ادخل سعر نصف الجملة',
+'wholesale_price.required' => 'ادخل سعر الجملة',
+'coast_price.required' => 'ادخل سعر التكلفة',
+
+'retail_uom.required_if' => 'اختر وحدة التجزئة',
+'retail_uom_quantity_to_parent.required_if' => 'ادخل عدد الوحدات الصغيرة داخل الوحدة الكبيرة',
+'retail_uom_quantity_to_parent.gt' => 'العدد يجب أن يكون أكبر من صفر',
+'retail_price.required_if' => 'ادخل سعر التجزئة',
+'nos_gomla_price_retail.required_if' => 'ادخل سعر نصف الجملة (تجزئة)',
+'wholesale_price_retail.required_if' => 'ادخل سعر الجملة (تجزئة)',
+'coast_price_retail.required_if' => 'ادخل سعر التكلفة (تجزئة)',
 
             'name.required'
                 =>'اسم الصنف مطلوب',
@@ -97,10 +87,7 @@ class ItemCardRequest extends FormRequest
                 =>'نوع الصنف غير صحيح',
             'retail_price.required'
                 =>'ادخل سعر التجزئه',
-            'wholesale_price.required'
-                =>'ادخل سعر الجمله',
-            'price.required'
-                =>'ادخل السعر',
+         
 
 
             'inv_itemscard_categories_id.required'
@@ -113,11 +100,7 @@ class ItemCardRequest extends FormRequest
 
             'active.required'
                 =>'حالة التفعيل مطلوبة',
-            'dose_has_retailunit.required'
-                =>'اختر فئة الصنف',
 
-
-                'nos_gomla_price.required' => 'ادخل سعر النص جملة',
 'nos_gomla_price.numeric' => 'سعر النص جملة يجب أن يكون رقم',
 
 'nos_gomla_price_retail.required' => 'ادخل سعر النص جملة (تجزئة)',
@@ -126,7 +109,7 @@ class ItemCardRequest extends FormRequest
 'wholesale_price_retail.required' => 'ادخل سعر الجملة (تجزئة)',
 'wholesale_price_retail.numeric' => 'سعر الجملة يجب أن يكون رقم',
 
-'coast_price.required' => 'ادخل سعر التكلفة',
+
 'coast_price.numeric' => 'سعر التكلفة يجب أن يكون رقم',
 
 'coast_price_retail.required' => 'ادخل سعر التكلفة (تجزئة)',

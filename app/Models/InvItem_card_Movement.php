@@ -52,4 +52,9 @@ public function movementType()
         'items_movements_types'
     );
 }
+public function itemCard()
+{
+    return $this->belongsTo(ItemCard::class, 'item_code', 'item_code');
+}
+
 }
